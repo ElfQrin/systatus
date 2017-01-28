@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # BASH Systatus
-# r2017-01-23 fr2016-10-18
+# r2017-01-28 fr2016-10-18
 # by Valerio Capello - http://labs.geody.com/ - License: GPL v3.0
 
 # Get Terminal Window Size
@@ -22,7 +22,15 @@ echo;  echo -ne "\033[0;31m"; echo -n "You have ROOT superpowers!"; echo -e "\03
 else
 echo
 fi
-echo "Your Terminal Window Size: $COLUMNS x $LINES"
+echo -n "You are ";
+if [ -n "${SSH_CONNECTION}" ]; then
+echo -n "connected remotely via SSH";
+elif [[ "${DISPLAY%%:0*}" != "" ]]; then
+echo -n "connected remotely "; echo -ne "\033[0;31m"; echo -n "NOT"; echo -ne "\033[0m"; echo " via SSH (which is Bad)";
+else
+echo -n "connected locally";
+fi
+echo ". Your Terminal Window Size: $COLUMNS x $LINES"
 echo
 
 # Software version
@@ -35,13 +43,14 @@ mysql -V
 echo
 
 # System status
-echo -n "CPU: "; grep "model name" /proc/cpuinfo
+echo -n "CPU: "; echo -n "$(grep 'model name' /proc/cpuinfo). ";
+echo -n "Cores: "; grep -c 'processor' /proc/cpuinfo
 echo
 # grep MemTotal /proc/meminfo
 # egrep 'Mem|Cache|Swap' /proc/meminfo
 free -h
 echo
-df -h
+df -Th
 # df -P -h | nawk '0+$5 >= 90 {print "FS: "$1" ("$6") Size: "$2" Used: "$3" (\033[1;31m"$5"\033[0m) Free: "$4" (\033[1;31m"(100-$5)"%\033[0m)";}'
 echo; echo -n "Uptime: "; uptime
 echo

@@ -1,7 +1,7 @@
 # /root/.bash_profile
 
 # BASH Shell Start-up
-# r2017-01-23 fr2016-10-18
+# r2017-01-28 fr2016-10-18
 # by Valerio Capello - http://labs.geody.com/ - License: GPL v3.0
 
 # Get Terminal Window Size
@@ -14,8 +14,8 @@ export PS1="\[\e[1;32m\][\$(date +%Y-%m-%d\ %H:%M:%S\ %a)] \u@\h:\w\\\$\[\e[0m\]
 export HISTTIMEFORMAT="%F %T  "
 
 # Aliases
-alias l="ls -laF --color=auto"
-alias d="ls -aF --color=auto"
+alias l="ls -laF --group-directories-first --color=auto"
+alias d="ls -aF --group-directories-first --color=auto"
 
 # Message
 echo; clear
@@ -32,7 +32,15 @@ echo;  echo -ne "\033[0;31m"; echo -n "You have ROOT superpowers!"; echo -e "\03
 else
 echo
 fi
-echo "Your Terminal Window Size: $COLUMNS x $LINES"
+echo -n "You are ";
+if [ -n "${SSH_CONNECTION}" ]; then
+echo -n "connected remotely via SSH";
+elif [[ "${DISPLAY%%:0*}" != "" ]]; then
+echo -n "connected remotely "; echo -ne "\033[0;31m"; echo -n "NOT"; echo -ne "\033[0m"; echo " via SSH (which is Bad)";
+else
+echo -n "connected locally";
+fi
+echo ". Your Terminal Window Size: $COLUMNS x $LINES"
 echo
 
 # Software version
@@ -45,7 +53,8 @@ mysql -V
 echo
 
 # System status
-echo -n "CPU: "; grep "model name" /proc/cpuinfo
+echo -n "CPU: "; echo -n "$(grep 'model name' /proc/cpuinfo). ";
+echo -n "Cores: "; grep -c 'processor' /proc/cpuinfo
 grep MemTotal /proc/meminfo
 df -P -h | nawk '0+$5 >= 90 {print "FS: "$1" ("$6") Size: "$2" Used: "$3" (\033[1;31m"$5"\033[0m) Free: "$4" (\033[1;31m"(100-$5)"%\033[0m)";}'
 echo; echo -n "Uptime: "; uptime
