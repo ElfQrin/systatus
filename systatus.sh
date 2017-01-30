@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # BASH Systatus
-# r2017-01-28 fr2016-10-18
+# r2017-01-30 fr2016-10-18
 # by Valerio Capello - http://labs.geody.com/ - License: GPL v3.0
 
 # Get Terminal Window Size
@@ -15,13 +15,10 @@ echo -n " ("; echo -ne "\033[0;33m"; echo -n "`echo $SSH_CLIENT | awk '{print $1
 echo -n ", ";
 echo -n "this is "; echo -ne "\033[0;33m"; echo -n "$(hostname)"; echo -ne "\033[0m";
 echo -n " ("; echo -ne "\033[0;33m"; echo -n "$(hostname -i)"; echo -ne "\033[0m)";
-echo -n ". ";
-echo -n "Machine ID: "; echo -n "$(cat /etc/machine-id)";
-if [ $EUID -eq 0 ]; then
-echo;  echo -ne "\033[0;31m"; echo -n "You have ROOT superpowers!"; echo -e "\033[0m";
-else
-echo
-fi
+echo ".";
+echo -n "Machine ID: "; echo -n "$(cat /etc/machine-id) ";
+echo -n "Boot ID: "; echo -n "$(cat /proc/sys/kernel/random/boot_id) ";
+echo -n "Session ID: "; echo "$(cat /proc/self/sessionid)";
 echo -n "You are ";
 if [ -n "${SSH_CONNECTION}" ]; then
 echo -n "connected remotely via SSH";
@@ -30,7 +27,10 @@ echo -n "connected remotely "; echo -ne "\033[0;31m"; echo -n "NOT"; echo -ne "\
 else
 echo -n "connected locally";
 fi
-echo ". Your Terminal Window Size: $COLUMNS x $LINES"
+echo ". Your Terminal Window Size is $COLUMNS x $LINES"
+if [ $EUID -eq 0 ]; then
+echo -ne "\033[0;31m"; echo -n "You have ROOT superpowers!"; echo -e "\033[0m";
+fi
 echo
 
 # Software version
@@ -43,6 +43,10 @@ mysql -V
 echo
 
 # System status
+echo -n "Vendor: "; echo "$(cat /sys/class/dmi/id/sys_vendor)";
+echo -n "Machine: "; echo "$(cat /sys/class/dmi/id/product_name)";
+echo -n "Board: "; echo "$(cat /sys/class/dmi/id/board_vendor) $(cat /sys/class/dmi/id/board_name)";
+echo -n "BIOS: "; echo "$(cat /sys/class/dmi/id/bios_vendor) $(cat /sys/class/dmi/id/bios_vendor) $(cat /sys/class/dmi/id/bios_version) $(cat /sys/class/dmi/id/bios_date)";
 echo -n "CPU: "; echo -n "$(grep 'model name' /proc/cpuinfo). ";
 echo -n "Cores: "; grep -c 'processor' /proc/cpuinfo
 echo
