@@ -1,7 +1,7 @@
 # /root/.bash_profile
 
 # BASH Shell Start-up
-# r2017-01-30_custom fr2016-10-18
+# r2017-01-30 fr2016-10-18
 # by Valerio Capello - http://labs.geody.com/ - License: GPL v3.0
 
 # Get Terminal Window Size
@@ -16,20 +16,6 @@ export HISTTIMEFORMAT="%F %T  "
 # Aliases
 alias l="ls -laF --group-directories-first --color=auto"
 alias d="ls -aF --group-directories-first --color=auto"
-alias lock="/var/www/scripts/lock.sh"
-alias sysinfo="/var/www/scripts/systatus.sh"
-alias systatus="/var/www/scripts/systatus.sh"
-alias swap="/var/www/scripts/swap.sh"
-
-# Set Directory for root user
-if [ $EUID -eq 0 ]; then
-alias cdh="cd /var/www"
-alias cdhh="cd $home"
-else
-alias cdh="cd $home"
-alias cdhh="cd $home"
-fi
-cdh
 
 # Message
 echo; clear
@@ -47,8 +33,7 @@ echo -n "You are ";
 if [ -n "${SSH_CONNECTION}" ]; then
 echo -n "connected remotely via SSH";
 elif [[ "${DISPLAY%%:0*}" != "" ]]; then
-echo -n "connected remotely "; echo -ne "\033[0;31m"; echo -n "NOT";
-echo -ne "\033[0m"; echo " via SSH (which is Bad)";
+echo -n "connected remotely "; echo -ne "\033[0;31m"; echo -n "NOT"; echo -ne "\033[0m"; echo " via SSH (which is Bad)";
 else
 echo -n "connected locally";
 fi
@@ -61,8 +46,6 @@ echo
 # Software version
 uname -a
 echo "Bash version: $BASH_VERSION"
-if [ $COLUMNS -ge 80 ]; then
-# Large Screens
 # Webserver version
 echo -n "$(/usr/sbin/apache2 -v|head --lines=1) "; echo "$(/usr/sbin/apache2 -v|tail --lines=1)";
 php -v|head --lines=1
@@ -83,16 +66,9 @@ echo
 
 # Users
 echo "Last logged users:"; last -n 5
-# echo; echo "Currently logged users:"; who
+echo; echo "Currently logged users:"; who
 echo; echo -n "Current user: "; id
 echo
-
-else
-# Small Screens
-echo; echo -n "Uptime: "; uptime
-# echo; echo -n "Current user: "; id
-echo
-fi
 
 # Security
 # Shellshock vulnerability check (reports to root only)
