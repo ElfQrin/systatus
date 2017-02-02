@@ -1,7 +1,7 @@
 # /root/.bash_profile
 
 # BASH Shell Start-up
-# r2017-01-30 fr2016-10-18
+# r2017-02-01 fr2016-10-18
 # by Valerio Capello - http://labs.geody.com/ - License: GPL v3.0
 
 # Get Terminal Window Size
@@ -59,7 +59,8 @@ echo -n "Machine: "; echo "$(cat /sys/class/dmi/id/product_name)";
 # echo -n "BIOS: "; echo "$(cat /sys/class/dmi/id/bios_vendor) $(cat /sys/class/dmi/id/bios_vendor) $(cat /sys/class/dmi/id/bios_version) $(cat /sys/class/dmi/id/bios_date)";
 echo -n "CPU: "; echo -n "$(grep 'model name' /proc/cpuinfo). ";
 echo -n "Cores: "; grep -c 'processor' /proc/cpuinfo
-grep MemTotal /proc/meminfo
+free -mh | xargs | awk '{print "Used/Free/Total Memory: " $9 " / " $10 " / " $8}'
+df -h | xargs | awk '{print "Used/Free/Total Disk ("$8"): " $11 " / " $10 " / " $9}'
 df -P -h | nawk '0+$5 >= 90 {print "FS: "$1" ("$6") Size: "$2" Used: "$3" (\033[1;31m"$5"\033[0m) Free: "$4" (\033[1;31m"(100-$5)"%\033[0m)";}'
 echo; echo -n "Uptime: "; uptime
 echo
