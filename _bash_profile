@@ -1,7 +1,7 @@
-# /root/.bash_profile
+# ~/.bash_profile
 
 # BASH Shell Start-up
-# r2017-02-01 fr2016-10-18
+# r2017-02-04 fr2016-10-18
 # by Valerio Capello - http://labs.geody.com/ - License: GPL v3.0
 
 # Get Terminal Window Size
@@ -21,7 +21,9 @@ alias d="ls -aF --group-directories-first --color=auto"
 echo; clear
 date "+%a %d %b %Y %H:%M:%S %Z (UTC%:z)"
 echo -n "Hello "; echo -ne "\033[0;33m"; echo -n "$(whoami)"; echo -ne "\033[0m";
-echo -n " ("; echo -ne "\033[0;33m"; echo -n "`echo $SSH_CLIENT | awk '{print $1}'`"; echo -ne "\033[0m)";
+if [ "${SSH_CONNECTION}" ]; then
+echo -n " ("; echo -ne "\033[0;33m"; echo -n "`echo $SSH_CLIENT | nawk '{print $1}'`"; echo -ne "\033[0m)";
+fi
 echo -n ", ";
 echo -n "welcome to "; echo -ne "\033[0;33m"; echo -n "$(hostname)"; echo -ne "\033[0m";
 echo -n " ("; echo -ne "\033[0;33m"; echo -n "$(hostname -i)"; echo -ne "\033[0m)";
@@ -55,12 +57,14 @@ echo
 # System status
 # echo -n "Vendor: "; echo "$(cat /sys/class/dmi/id/sys_vendor)";
 echo -n "Machine: "; echo "$(cat /sys/class/dmi/id/product_name)";
+# echo -n "Machine Type: "; echo "$MACHTYPE";
 # echo -n "Board: "; echo "$(cat /sys/class/dmi/id/board_vendor) $(cat /sys/class/dmi/id/board_name)";
 # echo -n "BIOS: "; echo "$(cat /sys/class/dmi/id/bios_vendor) $(cat /sys/class/dmi/id/bios_vendor) $(cat /sys/class/dmi/id/bios_version) $(cat /sys/class/dmi/id/bios_date)";
-echo -n "CPU: "; echo -n "$(grep 'model name' /proc/cpuinfo). ";
+echo -n "CPU: "; echo -n "$(grep 'model name' /proc/cpuinfo | head -1). ";
 echo -n "Cores: "; grep -c 'processor' /proc/cpuinfo
-free -mh | xargs | awk '{print "Used/Free/Total Memory: " $9 " / " $10 " / " $8}'
-df -h | xargs | awk '{print "Used/Free/Total Disk ("$8"): " $11 " / " $10 " / " $9}'
+free -mh | xargs | nawk '{print "Used/Free/Total Memory: " $9 " / " $10 " / " $8}'
+df -h | xargs | nawk '{print "Used/Free/Total Disk ("$8"): " $11 " / " $10 " / " $9}'
+# df -P -h | awk '(0+$5 < 90 && 0+$5 > 0) {print "FS: "$1" ("$6") Size: "$2" Used: "$3" ("$5") Free: "$4" ("(100-$5)"%)";}'
 df -P -h | nawk '0+$5 >= 90 {print "FS: "$1" ("$6") Size: "$2" Used: "$3" (\033[1;31m"$5"\033[0m) Free: "$4" (\033[1;31m"(100-$5)"%\033[0m)";}'
 echo; echo -n "Uptime: "; uptime
 echo
