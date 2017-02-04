@@ -4,6 +4,9 @@
 # r2017-02-04 fr2016-10-18 (fr2017-02-03 for Cygwin)
 # by Valerio Capello - http://labs.geody.com/ - License: GPL v3.0
 
+# Set Terminal Window Size
+tlins=40; tcols=160; echo -e "\e[8;$tlins;${tcols}t";
+
 # Get Terminal Window Size
 COLUMNS="$(tput cols)"; LINES="$(tput lines)";
 
