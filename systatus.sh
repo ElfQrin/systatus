@@ -1,8 +1,12 @@
 #!/bin/bash
 
 # BASH Systatus
-# r2017-02-04 fr2016-10-18
+# r2017-02-05 fr2016-10-18
 # by Valerio Capello - http://labs.geody.com/ - License: GPL v3.0
+
+# Config
+tshilon="\e[0;33m"; tshilof="\e[0m";
+tsalerton="\e[0;31m"; tsalertof="\e[0m";
 
 # Get Terminal Window Size
 COLUMNS="$(tput cols)"; LINES="$(tput lines)";
@@ -10,28 +14,28 @@ COLUMNS="$(tput cols)"; LINES="$(tput lines)";
 # Message
 echo
 date "+%a %d %b %Y %H:%M:%S %Z (UTC%:z)"
-echo -n "Hello "; echo -ne "\033[0;33m"; echo -n "$(whoami)"; echo -ne "\033[0m";
-if [ "${SSH_CONNECTION}" ]; then
-echo -n " ("; echo -ne "\033[0;33m"; echo -n "`echo $SSH_CLIENT | awk '{print $1}'`"; echo -ne "\033[0m)";
+echo -n "Hello "; echo -ne "$tshilon"; echo -n "$(whoami)"; echo -ne "$tshilof";
+if [ "$SSH_CONNECTION" ]; then
+echo -n " ("; echo -ne "$tshilon"; echo -n "`echo $SSH_CLIENT | awk '{print $1}'`"; echo -ne "$tshilof)";
 fi
 echo -n ", ";
-echo -n "this is "; echo -ne "\033[0;33m"; echo -n "$(hostname)"; echo -ne "\033[0m";
-echo -n " ("; echo -ne "\033[0;33m"; echo -n "$(hostname -i)"; echo -ne "\033[0m)";
+echo -n "this is "; echo -ne "$tshilon"; echo -n "$(hostname)"; echo -ne "$tshilof";
+echo -n " ("; echo -ne "$tshilon"; echo -n "$(hostname -i)"; echo -ne "$tshilof)";
 echo ".";
 echo -n "Machine ID: "; echo -n "$(cat /etc/machine-id) ";
 echo -n "Boot ID: "; echo -n "$(cat /proc/sys/kernel/random/boot_id) ";
 echo -n "Session ID: "; echo "$(cat /proc/self/sessionid)";
 echo -n "You are ";
-if [ -n "${SSH_CONNECTION}" ]; then
+if [ -n "$SSH_CONNECTION" ]; then
 echo -n "connected remotely via SSH";
 elif [[ "${DISPLAY%%:0*}" != "" ]]; then
-echo -n "connected remotely "; echo -ne "\033[0;31m"; echo -n "NOT"; echo -ne "\033[0m"; echo " via SSH (which is Bad)";
+echo -n "connected remotely "; echo -ne "$tsalerton"; echo -n "NOT"; echo -ne "$tsalertof"; echo " via SSH (which is Bad)";
 else
 echo -n "connected locally";
 fi
 echo ". Your Terminal Window Size is $COLUMNS x $LINES"
 if [ $EUID -eq 0 ]; then
-echo -ne "\033[0;31m"; echo -n "You have ROOT superpowers!"; echo -e "\033[0m";
+echo -ne "$tsalerton"; echo -n "You have ROOT superpowers!"; echo -e "$tsalertof";
 fi
 echo
 
@@ -42,6 +46,9 @@ echo "Bash version: $BASH_VERSION"
 echo -n "$(/usr/sbin/apache2 -v|head --lines=1) "; echo "$(/usr/sbin/apache2 -v|tail --lines=1)";
 php -v|head --lines=1
 mysql -V
+echo
+echo -n "Installed Packages: "; dpkg --get-selections | wc -l;
+echo "Last installed packages:"; grep install /var/log/dpkg.log | tail -5;
 echo
 
 # System status
@@ -58,8 +65,8 @@ echo
 free -h
 echo
 # df -Th
-df -P -h | awk '(0+$5 < 90 && 0+$5 > 0) {print "FS: "$1" ("$6") Size: "$2" Used: "$3" ("$5") Free: "$4" ("(100-$5)"%)";}'
-df -P -h | nawk '0+$5 >= 90 {print "FS: "$1" ("$6") Size: "$2" Used: "$3" (\033[1;31m"$5"\033[0m) Free: "$4" (\033[1;31m"(100-$5)"%\033[0m)";}'
+df -P -h | awk '(0+$5 < 90 && 0+$5 > 0) {print "FS: "$1" ("$6") Size: "$2" Used: "$3" ("$5") Free: "$4" ("(100-$5)"%)";}';
+echo -ne "$tsalerton"; df -P -h | awk '0+$5 >= 90 {print "FS: "$1" ("$6") Size: "$2" Used: "$3" ("$5") Free: "$4" ("(100-$5)"%)";}'; echo -ne "$tsalertof";
 echo; echo -n "Uptime: "; uptime
 echo
 
