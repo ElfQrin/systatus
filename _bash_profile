@@ -1,7 +1,7 @@
 # ~/.bash_profile
 
 # BASH Shell Start-up
-# r2017-02-05 fr2016-10-18
+# r2017-02-08 fr2016-10-18
 # by Valerio Capello - http://labs.geody.com/ - License: GPL v3.0
 
 # Config
@@ -72,8 +72,8 @@ echo -n "Machine: "; echo "$(cat /sys/class/dmi/id/product_name)";
 # echo -n "BIOS: "; echo "$(cat /sys/class/dmi/id/bios_vendor) $(cat /sys/class/dmi/id/bios_vendor) $(cat /sys/class/dmi/id/bios_version) $(cat /sys/class/dmi/id/bios_date)";
 echo -n "CPU: "; echo -n "$(grep 'model name' /proc/cpuinfo | head -1). ";
 echo -n "Cores: "; grep -c 'processor' /proc/cpuinfo
-free -mh | xargs | awk '{print "Used/Free/Total Memory: " $9 " / " $10 " / " $8}'
-df -h | xargs | awk '{print "Used/Free/Total Disk ("$8"): " $11 " / " $10 " / " $9}'
+free -mh | xargs | awk '{print "Memory: Size: " $8 " Used: " $9 " Free: " $10}';
+df -h | xargs | awk '{print "Disk ("$8"): Size: " $9 " Used: " $11 " Free: " $10}';
 # df -P -h | awk '(0+$5 < 90 && 0+$5 > 0) {print "FS: "$1" ("$6") Size: "$2" Used: "$3" ("$5") Free: "$4" ("(100-$5)"%)";}';
 echo -ne "$tsalerton"; df -P -h | awk '0+$5 >= 90 {print "FS: "$1" ("$6") Size: "$2" Used: "$3" ("$5") Free: "$4" ("(100-$5)"%)";}'; echo -ne "$tsalertof";
 echo; echo -n "Uptime: "; uptime
