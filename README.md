@@ -9,4 +9,4 @@ The software section is normally configured to provide information about a LAMP 
 http://labs.geody.com/systatus/
 
 Screenshot:
-<img src="http://imgur.com/UKWT6YL" alt="GeodyLabs Systatus Sysinfo Linux CygWin screenshot" />
+<img src="http://imgur.com/UKWT6YL" />
