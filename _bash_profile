@@ -1,7 +1,7 @@
 # ~/.bash_profile
 
 # BASH Shell Start-up
-# r2017-02-08 fr2016-10-18
+# r2018-08-03 fr2016-10-18
 # by Valerio Capello - http://labs.geody.com/ - License: GPL v3.0
 
 # Config
@@ -69,7 +69,7 @@ echo
 echo -n "Machine: "; echo "$(cat /sys/class/dmi/id/product_name)";
 # echo -n "Machine Type: "; echo "$MACHTYPE";
 # echo -n "Board: "; echo "$(cat /sys/class/dmi/id/board_vendor) $(cat /sys/class/dmi/id/board_name)";
-# echo -n "BIOS: "; echo "$(cat /sys/class/dmi/id/bios_vendor) $(cat /sys/class/dmi/id/bios_vendor) $(cat /sys/class/dmi/id/bios_version) $(cat /sys/class/dmi/id/bios_date)";
+# echo -n "BIOS: "; echo "$(cat /sys/class/dmi/id/bios_vendor) $(cat /sys/class/dmi/id/bios_version) $(cat /sys/class/dmi/id/bios_date)";
 echo -n "CPU: "; echo -n "$(grep 'model name' /proc/cpuinfo | head -1). ";
 echo -n "Cores: "; grep -c 'processor' /proc/cpuinfo
 free -mh | xargs | awk '{print "Memory: Size: " $8 " Used: " $9 " Free: " $10}';
