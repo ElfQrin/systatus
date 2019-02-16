@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # BASH Systatus
-# r2018-08-03 fr2016-10-18
+# r2019-02-16 fr2016-10-18
 # by Valerio Capello - http://labs.geody.com/ - License: GPL v3.0
 
 # Config
@@ -40,10 +40,12 @@ fi
 echo
 
 # Software version
+lsb_release -ds
 uname -a
 echo "Bash version: $BASH_VERSION"
 # Webserver version
 echo -n "$(/usr/sbin/apache2 -v|head --lines=1) "; echo "$(/usr/sbin/apache2 -v|tail --lines=1)";
+openssl version -v
 php -v|head --lines=1
 mysql -V
 echo
