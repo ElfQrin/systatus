@@ -1,7 +1,7 @@
 # ~/.bash_profile
 
-# BASH Shell Start-up for Raspbian
-# r2018-08-03 fr2016-10-18
+# Systatus BASH Shell Start-up for Raspbian
+# r2019-02-20 fr2016-10-18
 # by Valerio Capello - http://labs.geody.com/ - License: GPL v3.0
 
 # Config
@@ -28,7 +28,7 @@ alias d="ls -aF --group-directories-first --color=auto"
 echo; clear
 date "+%a %d %b %Y %H:%M:%S %Z (UTC%:z)"
 echo -n "Hello "; echo -ne "$tshilon"; echo -n "$(whoami)"; echo -ne "$tshilof";
-if [ "$SSH_CONNECTION" ]; then
+if [[ "$SSH_CONNECTION" ]]; then
 echo -n " ("; echo -ne "$tshilon"; echo -n "`echo $SSH_CLIENT | awk '{print $1}'`"; echo -ne "$tshilof)";
 fi
 echo -n ", ";
@@ -39,7 +39,7 @@ echo ".";
 echo -n "Machine ID: "; echo -n "$(cat /etc/machine-id) ";
 echo -n "Boot ID: "; echo "$(cat /proc/sys/kernel/random/boot_id) ";
 echo -n "You are ";
-if [ -n "$SSH_CONNECTION" ]; then
+if [[ -n "$SSH_CONNECTION" ]]; then
 echo -n "connected remotely via SSH";
 elif [[ "${DISPLAY%%:0*}" != "" ]]; then
 echo -n "connected remotely "; echo -ne "$tsalerton"; echo -n "NOT";
@@ -48,9 +48,17 @@ else
 echo -n "connected locally";
 fi
 echo ". Your Terminal Window Size is $COLUMNS x $LINES"
-if [ $EUID -eq 0 ]; then
+if [[ $EUID -eq 0 ]]; then
 echo -ne "$tsalerton"; echo -n "You have ROOT superpowers!"; echo -e "$tsalertof";
 fi
+echo
+
+# Machine
+echo -n "CPU: "; echo -n "$(grep 'model name' /proc/cpuinfo | head -1). ";
+echo -n "Cores: "; grep -c 'processor' /proc/cpuinfo
+free -mh | xargs | awk '{print "Memory: Size: "$8" Used: "$9" Free: "$10" Avail: "$13}';
+df / -Th | xargs | awk '{print "FS: "$9" Type: "$10" Size: "$11" Used: "$12" ("$14") Avail: "$13" ("(100-$14)"%)"}';
+echo; echo -n "Uptime: "; uptime
 echo
 
 # Software version
@@ -66,18 +74,8 @@ openssl version -v
 # echo "Last installed packages:"; grep install /var/log/dpkg.log | tail --lines=5;
 echo
 
-# System status
-echo -n "CPU: "; echo -n "$(grep 'model name' /proc/cpuinfo | head -1). ";
-echo -n "Cores: "; grep -c 'processor' /proc/cpuinfo
-free -mh | xargs | awk '{print "Memory: Size: " $8 " Used: " $9 " Free: " $10}';
-df -h | xargs | awk '{print "Disk ("$8"): Size: " $9 " Used: " $11 " Free: " $10}';
-# df -P -h | awk '(0+$5 < 90 && 0+$5 > 0) {print "FS: "$1" ("$6") Size: "$2" Used: "$3" ("$5") Free: "$4" ("(100-$5)"%)";}';
-echo -ne "$tsalerton"; df -P -h | awk '0+$5 >= 90 {print "FS: "$1" ("$6") Size: "$2" Used: "$3" ("$5") Free: "$4" ("(100-$5)"%)";}'; echo -ne "$tsalertof";
-echo; echo -n "Uptime: "; uptime
-echo
-
 # Users
-echo "Last logged users:"; last -n 5
+echo "Last logged users:"; last -n 5 | sed '/^$/d'
 echo; echo "Currently logged users:"; who
 # echo; echo -n "Current user: "; id
 echo

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # BASH Systatus for Rasbpian
-# r2018-08-03 fr2016-10-18
+# r2019-02-20 fr2016-10-18
 # by Valerio Capello - http://labs.geody.com/ - License: GPL v3.0
 
 # Config
@@ -38,6 +38,19 @@ echo -ne "$tsalerton"; echo -n "You have ROOT superpowers!"; echo -e "$tsalertof
 fi
 echo
 
+# Machine
+echo -n "CPU: "; echo -n "$(grep 'model name' /proc/cpuinfo|head -1). ";
+echo -n "Cores: "; grep -c 'processor' /proc/cpuinfo
+echo
+# grep MemTotal /proc/meminfo
+# egrep 'Mem|Cache|Swap' /proc/meminfo
+free -h
+echo
+# df / -Th
+df / -Th | xargs | awk '{print "FS: "$9" Type: "$10" Size: "$11" Used: "$12" ("$14") Avail: "$13" ("(100-$14)"%)"}';
+echo; echo -n "Uptime: "; uptime
+echo
+
 # Software version
 uname -a
 echo "Bash version: $BASH_VERSION"
@@ -50,22 +63,8 @@ echo -n "Installed Packages: "; dpkg --get-selections | wc -l;
 echo "Last installed packages:"; grep install /var/log/dpkg.log | tail -5;
 echo
 
-# System status
-echo -n "CPU: "; echo -n "$(grep 'model name' /proc/cpuinfo|head -1). ";
-echo -n "Cores: "; grep -c 'processor' /proc/cpuinfo
-echo
-# grep MemTotal /proc/meminfo
-# egrep 'Mem|Cache|Swap' /proc/meminfo
-free -h
-echo
-# df -Th
-df -P -h | awk '(0+$5 < 90 && 0+$5 > 0) {print "FS: "$1" ("$6") Size: "$2" Used: "$3" ("$5") Free: "$4" ("(100-$5)"%)";}';
-echo -ne "$tsalerton"; df -P -h | awk '0+$5 >= 90 {print "FS: "$1" ("$6") Size: "$2" Used: "$3" ("$5") Free: "$4" ("(100-$5)"%)";}'; echo -ne "$tsalertof";
-echo; echo -n "Uptime: "; uptime
-echo
-
 # Users
-echo "Last logged users:"; last -n 5 -F
+echo "Last logged users:"; last -n 5 -F | sed '/^$/d'
 echo; echo "Currently logged users:"; who
 # echo; echo -n "Current user: "; id
 echo

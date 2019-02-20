@@ -6,6 +6,8 @@ There are two versions of this script, one to run at the shell startup ( ~/.bash
 
 The software section is normally configured to provide information about a LAMP webserver but you can edit it to include or exclude more software you want to be sure is running.
 
+It's currently available for Debian Linux, Raspbian, Cygwin.
+
 http://labs.geody.com/systatus/
 
 Screenshot:

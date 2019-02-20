@@ -1,7 +1,7 @@
 # ~/.bash_profile
 
-# BASH Shell Start-up for Cygwin
-# r2017-02-05 fr2016-10-18 (fr2017-02-03 for Cygwin)
+# Systatus BASH Shell Start-up for Cygwin
+# r2019-02-20 fr2016-10-18 (fr2017-02-03 for Cygwin)
 # by Valerio Capello - http://labs.geody.com/ - License: GPL v3.0
 
 # Config
@@ -28,7 +28,7 @@ alias d="ls -aF --group-directories-first --color=auto"
 echo; clear
 date "+%a %d %b %Y %H:%M:%S %Z (UTC%:z)"
 echo -n "Hello "; echo -ne "$tshilon"; echo -n "$(whoami)"; echo -ne "$tshilof";
-if [ "$SSH_CONNECTION" ]; then
+if [[ "$SSH_CONNECTION" ]]; then
 echo -n " ("; echo -ne "$tshilon"; echo -n "`echo $SSH_CLIENT | awk '{print $1}'`"; echo -ne "$tshilof)";
 fi
 echo -n ", ";
@@ -36,7 +36,7 @@ echo -n "welcome to "; echo -ne "$tshilon"; echo -n "$(hostname)"; echo -ne "$ts
 echo -n " ("; echo -ne "$tshilon"; echo -n "$(hostname -i)"; echo -ne "$tshilof)";
 echo ".";
 echo -n "You are ";
-if [ -n "$SSH_CONNECTION" ]; then
+if [[ -n "$SSH_CONNECTION" ]]; then
 echo -n "connected remotely via SSH";
 elif [[ "${DISPLAY%%:0*}" != "" ]]; then
 echo -n "connected remotely "; echo -ne "$tsalerton"; echo -n "NOT"; echo -ne "$tsalertof"; echo " via SSH (which is Bad)";
@@ -44,22 +44,22 @@ else
 echo -n "connected locally";
 fi
 echo ". Your Terminal Window Size is $COLUMNS x $LINES"
-if [ $EUID -eq 0 ]; then
+if [[ $EUID -eq 0 ]]; then
 echo -ne "$tsalerton"; echo -n "You have ROOT superpowers!"; echo -e "$tsalertof";
 fi
 echo
 
-# Software version
-uname -a
-echo "Bash version: $BASH_VERSION"
-echo
-
-# System status
+# Machine
 echo -n "Machine Type: "; echo "$MACHTYPE";
 echo -n "CPU: "; echo -n "$(grep 'model name' /proc/cpuinfo | head -1). ";
 echo -n "Cores: "; grep -c 'processor' /proc/cpuinfo
 df -P -h | awk '(0+$5 < 90 && 0+$5 > 0) {print "FS: "$1" ("$6") Size: "$2" Used: "$3" ("$5") Free: "$4" ("(100-$5)"%)";}';
 echo -ne "$tsalerton"; df -P -h | awk '0+$5 >= 90 {print "FS: "$1" ("$6") Size: "$2" Used: "$3" ("$5") Free: "$4" ("(100-$5)"%)";}'; echo -ne "$tsalertof";
+echo
+
+# Software version
+uname -a
+echo "Bash version: $BASH_VERSION"
 echo
 
 # Security
