@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# BASH Systatus
-# r2019-02-20 fr2016-10-18
+# SysInfo / Systatus
+# r2021-07-21 fr2016-10-18
 # by Valerio Capello - http://labs.geody.com/ - License: GPL v3.0
 
 # Config
@@ -19,8 +19,16 @@ if [[ "$SSH_CONNECTION" ]]; then
 echo -n " ("; echo -ne "$tshilon"; echo -n "`echo $SSH_CLIENT | awk '{print $1}'`"; echo -ne "$tshilof)";
 fi
 echo -n ", ";
-echo -n "this is "; echo -ne "$tshilon"; echo -n "$(hostname)"; echo -ne "$tshilof";
-echo -n " ("; echo -ne "$tshilon"; echo -n "$(hostname -i)"; echo -ne "$tshilof)";
+echo -n "this is "; echo -ne "$tshilon"; echo -n "$( hostname )"; echo -ne "$tshilof";
+echo -n " ("; echo -ne "$tshilon";
+# echo -n "$( hostname -i )";
+echo -n "$( ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p' )";
+echo -ne "$tshilof";
+echo -n "; Gateway: ";
+echo -ne "$tshilon";
+echo -n "$( route -n | grep 'UG[ \t]' | awk '{print $2}' )";
+echo -ne "$tshilof";
+echo -n ")";
 echo ".";
 echo -n "Machine ID: "; echo -n "$(cat /etc/machine-id) ";
 echo -n "Boot ID: "; echo -n "$(cat /proc/sys/kernel/random/boot_id) ";
@@ -33,6 +41,9 @@ echo -n "connected remotely "; echo -ne "$tsalerton"; echo -n "NOT"; echo -ne "$
 else
 echo -n "connected locally";
 fi
+utty="$(tty)";
+if [[ $utty == "/dev/"* ]]; then utty=$(cut -c 6- <<< $utty); fi
+echo -n " on $utty";
 echo ". Your Terminal Window Size is $COLUMNS x $LINES"
 if [[ $EUID -eq 0 ]]; then
 echo -ne "$tsalerton"; echo -n "You have ROOT superpowers!"; echo -e "$tsalertof";
@@ -40,8 +51,7 @@ fi
 echo
 
 # Machine
-echo -n "Vendor: "; echo "$(cat /sys/class/dmi/id/sys_vendor)";
-echo -n "Machine: "; echo "$(cat /sys/class/dmi/id/product_name)";
+echo -n "Machine: "; echo "$(cat /sys/class/dmi/id/product_name) ($(cat /sys/class/dmi/id/sys_vendor))";
 echo -n "Machine Type: "; echo "$MACHTYPE";
 echo -n "Board: "; echo "$(cat /sys/class/dmi/id/board_vendor) $(cat /sys/class/dmi/id/board_name)";
 echo -n "BIOS: "; echo "$(cat /sys/class/dmi/id/bios_vendor) $(cat /sys/class/dmi/id/bios_version) $(cat /sys/class/dmi/id/bios_date)";
@@ -49,14 +59,19 @@ echo -n "CPU: "; echo -n "$(grep 'model name' /proc/cpuinfo|head -1). ";
 echo -n "Cores: "; grep -c 'processor' /proc/cpuinfo
 echo
 
+echo -n "CPU average load: "; uptime | awk -F'[a-z]:' '{print $2}' | xargs | awk '{print "1 m: "$1" 5 m: "$2" 15 m: "$3}';
+echo
+
 # grep MemTotal /proc/meminfo
 # egrep 'Mem|Cache|Swap' /proc/meminfo
 free -h
+echo -n "Swappiness: "; cat /proc/sys/vm/swappiness | tr -d '\n'; echo '%'; 
 echo
 # df / -Th
 df / -Th | xargs | awk '{print "FS: "$9" Type: "$10" Size: "$11" Used: "$12" ("$14") Avail: "$13" ("(100-$14)"%)"}';
 
-echo; echo -n "Uptime: "; uptime
+echo
+echo "Last Boot / Uptime: `uptime -s` (`uptime -p`)";
 echo
 
 # Software version
