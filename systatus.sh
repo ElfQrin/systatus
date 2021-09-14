@@ -1,12 +1,81 @@
 #!/bin/bash
 
 # SysInfo / Systatus
-# r2021-07-21 fr2016-10-18
+# r2021-09-14 fr2016-10-18
 # by Valerio Capello - http://labs.geody.com/ - License: GPL v3.0
 
+
 # Config
+
 tshilon="\e[0;33m"; tshilof="\e[0m";
 tsalerton="\e[0;31m"; tsalertof="\e[0m";
+
+f2benable=true; # Check Fail2Ban
+f2bjaillist=1; # If Fail2Ban is enabled, list all Fail2Ban Jails: 0: No, 1: Compact, 2: Detailed.
+f2bjailliststatus=false; # If Fail2Ban is enabled, show status for all Fail2Ban Jails
+
+ufwenable=true; # Check UFW (Uncomplicated Firewall)
+
+
+# Functions
+
+if ( $f2benable ); then
+
+f2blist() {
+echo "fail2ban list jails"; echo;
+# fail2ban-client --version ; echo;
+jails=$(fail2ban-client status | grep "Jail list" | sed -E 's/^[^:]+:[ \t]+//' | sed 's/,//g')
+jailsnum=0;
+for jail in $jails
+do
+jailsnum=$((jailsnum+1));
+jailstatus=$(fail2ban-client status $jail)
+filelist=$( echo -n "$jailstatus" | grep -m 1 'File list:' | awk {'print $5'} );
+echo "$jail for $filelist";
+done
+if [ $jailsnum -eq 1 ]; then
+echo "$jailsnum Fail2Ban Jail found.";
+elif [ $jailsnum -gt 1 ]; then
+echo "$jailsnum Fail2Ban Jails found.";
+else
+echo "No Fail2Ban Jails found.";
+fi
+}
+
+f2bstatus() {
+echo "fail2ban-client status --all"; echo;
+# fail2ban-client --version ; echo;
+jails=$(fail2ban-client status | grep "Jail list" | sed -E 's/^[^:]+:[ \t]+//' | sed 's/,//g')
+jailsnum=0;
+for jail in $jails
+do
+jailsnum=$((jailsnum+1));
+fail2ban-client status $jail
+echo
+done
+if [ $jailsnum -eq 1 ]; then
+echo "$jailsnum Fail2Ban Jail found.";
+elif [ $jailsnum -gt 1 ]; then
+echo "$jailsnum Fail2Ban Jails found.";
+else
+echo "No Fail2Ban Jails found.";
+fi
+}
+
+f2bdatasize() {
+# f2bdbsize=$( du -bs '/var/lib/fail2ban/' | awk '{print $1}' | tr -d '\n' );
+f2bdbsize=$( du -bsc /var/lib/fail2ban/* | head --lines=1 | awk '{print $1}' | tr -d '\n' );
+f2blgsize=$( du -bsc /var/log/fail2ban.* | head --lines=1 | awk '{print $1}' | tr -d '\n' );
+f2btotsize=( $f2bdbsize + $f2blgsize );
+echo "Fail2Ban Database size is $f2bdbsize bytes.";
+echo "Fail2Ban Logs size is $f2blgsize bytes.";
+echo "Fail2Ban total data size is $f2btotsize bytes.";
+}
+
+fi
+
+
+# Main
 
 # Get Terminal Window Size
 COLUMNS="$(tput cols)"; LINES="$(tput lines)";
@@ -83,6 +152,46 @@ echo -n "$(/usr/sbin/apache2 -v|head --lines=1) "; echo "$(/usr/sbin/apache2 -v|
 openssl version -v
 php -v|head --lines=1
 mysql -V
+
+if ( $f2benable ); then
+echo
+istheref2b=$( type -t fail2ban-client );
+if [ -n "$istheref2b" ]; then
+if [ $( fail2ban-client status | wc -l ) -ge 3 ]; then
+# isf2bon=true;
+fail2ban-client --version | head --lines=1 ;
+
+if [[ $f2bjaillist -eq 1 ]]; then
+fail2ban-client status ;
+elif [[ $f2bjaillist -eq 2 ]]; then
+echo; f2blist;
+fi
+if ( $f2bjailliststatus ); then
+echo; f2bstatus;
+fi
+else
+# isf2bon=false;
+echo 'Fail2Ban is present but not active.';
+fi
+else
+echo 'Fail2Ban is not present.';
+fi
+fi
+
+if ( $ufwenable ); then
+echo
+isthereufw=$( type -t ufw );
+if [ -n "$isthereufw" ]; then
+# ufwstatus=$( ufw status | head --lines=1 | tr -d '\n' );
+# if [[ "$ufwstatus" == 'Status: active' ]]; then isufwon=true; else isufwon=false; fi
+# else
+# isufwon=false;
+ufw --version ; ufw status ;
+else
+echo 'UFW (Uncomplicated Firewall) is not present.';
+fi
+fi
+
 echo
 echo -n "Installed Packages: "; dpkg --get-selections | wc -l;
 echo "Last installed packages:"; grep install /var/log/dpkg.log | tail -5;
