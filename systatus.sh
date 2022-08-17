@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # SysInfo / Systatus
-# r2021-09-14 fr2016-10-18
+xver='r2022-08-16 fr2016-10-18';
 # by Valerio Capello - http://labs.geody.com/ - License: GPL v3.0
 
 
@@ -10,11 +10,20 @@
 tshilon="\e[0;33m"; tshilof="\e[0m";
 tsalerton="\e[0;31m"; tsalertof="\e[0m";
 
+shwkernimg=false; # Show Linux images present on the system
+shwkernimgii=false; # Show Linux images installed on the system
+shwrunlevel=true;  # Show Current Runlevel
+shwlastinpk=true; # Show Last Installed Packages
+shwusrloglast=true; # Show Last logged users
+shwusrlognow=true;  # Show Currently logged users
+
 f2benable=true; # Check Fail2Ban
 f2bjaillist=1; # If Fail2Ban is enabled, list all Fail2Ban Jails: 0: No, 1: Compact, 2: Detailed.
 f2bjailliststatus=false; # If Fail2Ban is enabled, show status for all Fail2Ban Jails
 
 ufwenable=true; # Check UFW (Uncomplicated Firewall)
+
+chkshellshock=true; # Check for Shellshock Security Vulnerability
 
 
 # Functions
@@ -81,6 +90,8 @@ fi
 COLUMNS="$(tput cols)"; LINES="$(tput lines)";
 
 # Message
+# echo
+echo "Systatus (SysInfo) $xver -- https://labs.geody.com/systatus/";
 echo
 date "+%a %d %b %Y %H:%M:%S %Z (UTC%:z)"
 echo -n "Hello "; echo -ne "$tshilon"; echo -n "$(whoami)"; echo -ne "$tshilof";
@@ -143,10 +154,24 @@ echo
 echo "Last Boot / Uptime: `uptime -s` (`uptime -p`)";
 echo
 
+# Kernel
+if ( $shwkernimg ); then
+echo "Linux images present on this system:"; dpkg --list | egrep -i 'linux-image|linux-headers' ; echo ;
+fi
+if ( $shwkernimgii ); then
+echo "Linux images currently installed on this system:"; dpkg --list | grep -i -E 'linux-image|linux-kernel' | grep '^ii' ; echo ;
+fi
+
+# Init
+if ( $shwrunlevel ); then
+echo -n "Current Runlevel: "; who -r | sed 's/^ *//g' ; echo ;
+fi
+
 # Software version
 lsb_release -ds
 uname -a
 echo "Bash version: $BASH_VERSION"
+echo "Display Server: $XDG_SESSION_TYPE"
 # Webserver version
 echo -n "$(/usr/sbin/apache2 -v|head --lines=1) "; echo "$(/usr/sbin/apache2 -v|tail --lines=1)";
 openssl version -v
@@ -194,17 +219,25 @@ fi
 
 echo
 echo -n "Installed Packages: "; dpkg --get-selections | wc -l;
+if ( $shwlastinpk ); then
 echo "Last installed packages:"; grep install /var/log/dpkg.log | tail -5;
+fi
 echo
 
 # Users
+if ( $shwusrloglast ); then
 echo "Last logged users:"; last -n 5 -F | sed '/^$/d'
+fi
+if ( $shwusrlognow ); then
 echo; echo "Currently logged users:"; who
+fi
 echo; echo -n "Current user: "; id
 echo
 
 # Security
+if ( $chkshellshock ); then
 # Shellshock vulnerability check (reports to root only)
 if [[ $EUID -eq 0 ]]; then
 env x='() { :;}; echo Bash vulnerable to Shellshock' bash -c 'echo -n'
+fi
 fi
