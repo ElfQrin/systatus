@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # SysInfo / Systatus
-xver='r2022-08-16 fr2016-10-18';
+xver='r2023-08-12 fr2016-10-18';
 # by Valerio Capello - http://labs.geody.com/ - License: GPL v3.0
 
 
@@ -143,7 +143,7 @@ echo -n "CPU average load: "; uptime | awk -F'[a-z]:' '{print $2}' | xargs | awk
 echo
 
 # grep MemTotal /proc/meminfo
-# egrep 'Mem|Cache|Swap' /proc/meminfo
+# grep -E 'Mem|Cache|Swap' /proc/meminfo
 free -h
 echo -n "Swappiness: "; cat /proc/sys/vm/swappiness | tr -d '\n'; echo '%'; 
 echo
@@ -156,7 +156,7 @@ echo
 
 # Kernel
 if ( $shwkernimg ); then
-echo "Linux images present on this system:"; dpkg --list | egrep -i 'linux-image|linux-headers' ; echo ;
+echo "Linux images present on this system:"; dpkg --list | grep -E -i 'linux-image|linux-headers' ; echo ;
 fi
 if ( $shwkernimgii ); then
 echo "Linux images currently installed on this system:"; dpkg --list | grep -i -E 'linux-image|linux-kernel' | grep '^ii' ; echo ;

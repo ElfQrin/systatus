@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # BASH Systatus for Rasbpian
-# r2019-02-20 fr2016-10-18
+xver='r2023-08-12 fr2016-10-18';
 # by Valerio Capello - http://labs.geody.com/ - License: GPL v3.0
 
 # Config
@@ -43,7 +43,7 @@ echo -n "CPU: "; echo -n "$(grep 'model name' /proc/cpuinfo|head -1). ";
 echo -n "Cores: "; grep -c 'processor' /proc/cpuinfo
 echo
 # grep MemTotal /proc/meminfo
-# egrep 'Mem|Cache|Swap' /proc/meminfo
+# grep -E 'Mem|Cache|Swap' /proc/meminfo
 free -h
 echo
 # df / -Th
